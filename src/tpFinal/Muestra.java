@@ -60,11 +60,23 @@ public class Muestra {
 		this.opinion = opinion;
 		this.ubicacion = ubicacion;
 		this.usuario = propietario.getId();
-		this.propietario = propietario;
+		this.setPropietario(propietario);
 		this.historial = new HashMap<>();
 		this.ponerA();
 		this.estadoActual = new EstadoMuestraProceso();
 		this.agregarOpinion(opinion, propietario, this);
+	}
+
+
+
+	public void setPropietario(Usuario propietario) {
+		this.propietario = propietario;
+	}
+
+
+
+	public int getPropietarioId() {
+		return this.propietario.getId();
 	}
 	
 }
