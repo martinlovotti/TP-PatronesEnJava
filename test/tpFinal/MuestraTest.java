@@ -15,13 +15,15 @@ class MuestraTest {
 	Usuario usuarioMock2;
 	Usuario usuarioMock3;
 	Usuario usuarioMock4;
+	Ubicacion ubiMock;
 	@BeforeEach
 	void setUp() {
 		usuarioMock = mock(Usuario.class);
 		usuarioMock2 = mock(Usuario.class);
 		usuarioMock3 = mock(Usuario.class);
 		usuarioMock4 = mock(Usuario.class);
-		muestraReal = new Muestra(Vinchuca.Ninguna, "escalada", usuarioMock4);
+		ubiMock = mock(Ubicacion.class);
+		muestraReal = new Muestra(Vinchuca.Ninguna, ubiMock, usuarioMock4);
 	}
 	
 	@Test
