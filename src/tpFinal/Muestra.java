@@ -5,7 +5,7 @@ import java.util.Map;
 
 public class Muestra {
 	Vinchuca opinion;
-	Ubicacion ubicacion;
+	String ubicacion;
 	private int usuario;
 	private Usuario propietario;
 	HashMap<Vinchuca, Integer> historial;
@@ -18,7 +18,7 @@ public class Muestra {
 		return usuario;
 	}
 	
-	public Ubicacion getUbicacion() {
+	public String getUbicacion() {
 		return ubicacion;
 	}
 	
@@ -59,7 +59,7 @@ public class Muestra {
 	    return resultado;
 	}
 	
-	public Muestra(Vinchuca opinion, Ubicacion ubicacion, Usuario propietario) {
+	public Muestra(Vinchuca opinion, String ubicacion, Usuario propietario) {
 		this.opinion = opinion;
 		this.ubicacion = ubicacion;
 		this.usuario = propietario.getId();
