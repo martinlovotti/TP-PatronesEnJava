@@ -14,6 +14,8 @@ public class EstadoUsuarioExperto extends EstadoUsuario {
         if (u.puedeOpinarSobre(m)) {
             u.getOpiniones().put(m, LocalDate.now());
             m.agregarOpinion(v, u, m);
+        } else {
+        	System.out.println("El usuario no puede opinar sobre esta muestra.");
         }
 		
 	}

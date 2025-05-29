@@ -3,7 +3,7 @@ package tpFinal;
 import java.time.LocalDate;
 import java.util.HashMap;
 
-public abstract class Usuario {
+public class Usuario {
 	private int id;
 	private boolean esExpertoValidado;
 	private boolean esExperto;
