@@ -1,11 +1,13 @@
 package tpFinal;
 
-public class Organizacion {
+public class Organizacion implements Observador{
 	 private String nombre;
 	    private Ubicacion ubicacion;
 	    private TipoOrganizacion tipo;
 	    private int cantidadDeEmpleados;
-
+	    private FuncionalidadExterna funcionalidadNuevaMuestra;
+	    private FuncionalidadExterna funcionalidadNuevaValidacion;
+	    
 	    public Organizacion(String nombre, Ubicacion ubicacion, TipoOrganizacion tipo, int empleados) {
 	        this.nombre = nombre;
 	        this.ubicacion = ubicacion;
@@ -27,5 +29,25 @@ public class Organizacion {
 
 	    public int getCantidadDeEmpleados() {
 	        return cantidadDeEmpleados;
+	    }
+	    
+	    public void realizarFuncionalidadNuevaMuestra(zonaDeCobertura z, Muestra m) {
+	    	funcionalidadNuevaMuestra.nuevoEvento(this,  z,  m);
+	    }
+	    
+	    public void realizarFuncionalidadNuevaValidacion(zonaDeCobertura z, Muestra m) {
+	    	funcionalidadNuevaValidacion.nuevoEvento(this, z, m);
+	    }
+	    
+	    @Override
+	    public void notificarSubida(Muestra muestra, zonaDeCobertura zona) {
+	        System.out.println("[" + nombre + "] recibió notificación de muestra en " + zona.getNombre());
+	        this.realizarFuncionalidadNuevaMuestra(zona, muestra); 
+	    }
+
+	    @Override
+	    public void notificarValidacion(Muestra muestra, zonaDeCobertura zona) {
+	        System.out.println("[" + nombre + "] recibió notificación de validación en " + zona.getNombre());
+	        this.realizarFuncionalidadNuevaValidacion(zona, muestra);
 	    }
 }

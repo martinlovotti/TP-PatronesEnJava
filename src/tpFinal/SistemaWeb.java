@@ -15,6 +15,12 @@ public class SistemaWeb {
         adminMuestras.registrarMuestra(muestra);
         adminZonas.nuevaMuestra(muestra);
     }
+    
+    
+    //Se invoca cuando un usuario opina y la muestra fue verificada
+    public void recibirVerificacion(Muestra m) {
+    	this.adminZonas.notificarValidacion(m);//Avisa al admin de zonas
+    }
 
     public List<Muestra> muestrasCercanas(Ubicacion ubicacion, double distancia) {
         return adminMuestras.muestrasCercanas(ubicacion, distancia);

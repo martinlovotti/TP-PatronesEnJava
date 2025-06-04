@@ -22,6 +22,16 @@ public class AdministradorDeZonas {
             }
         }
     }
+    
+    
+    //Desde el sitioWeb le llega este msj y se queda con las zona y le avisa de la verificacion
+    public void notificarValidacion(Muestra muestra) {
+        for (zonaDeCobertura zona : zonas) {
+            if (zona.contieneMuestra(muestra)) {
+                zona.muestraValidada(muestra);  
+            }
+        }
+    }
 
     public List<zonaDeCobertura> getZonasQueContienen(Muestra muestra) {
         return zonas.stream()

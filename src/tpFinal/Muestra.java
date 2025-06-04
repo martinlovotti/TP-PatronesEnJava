@@ -23,6 +23,10 @@ public class Muestra {
     public Ubicacion getUbicacion() {
         return ubicacion;
     }
+    
+    public EstadoMuestra getEstadoActual() {
+    	return estadoActual;
+    }
 
 
     public void agregarOpinion(Vinchuca v, Usuario u, Muestra m) {

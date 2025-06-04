@@ -3,17 +3,42 @@ package tpFinal;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class zonaDeCobertura {
+public class zonaDeCobertura implements Observable {
 	private String nombre;
     private Ubicacion epicentro;
     private double radioKm;
     private List<Muestra> muestras;
-
+    private List<Observador> observadores;
+    
     public zonaDeCobertura(String nombre, Ubicacion epicentro, double radioKm, List<Muestra> muestras) {
         this.nombre = nombre;
         this.epicentro = epicentro;
         this.radioKm = radioKm;
         this.muestras = muestras;
+    }
+    
+    @Override
+    public void suscribir(Observador observador) {
+        observadores.add(observador);
+    }
+
+    @Override
+    public void desuscribir(Observador observador) {
+        observadores.remove(observador);
+    }
+
+    @Override
+    public void notificarSubida(Muestra muestra) {
+        for (Observador o : observadores) {
+            o.notificarSubida(muestra, this);
+        }
+    }
+
+    @Override
+    public void notificarValidacion(Muestra muestra) {
+        for (Observador o : observadores) {
+            o.notificarValidacion(muestra, this);
+        }
     }
 
     public String getNombre() {
@@ -30,6 +55,14 @@ public class zonaDeCobertura {
     
     public void agregarMuestra(Muestra m) {
         this.muestras.add(m);
+        this.notificarSubida(m);
+    }
+    
+    //Se invoca desde el adminDeZonas
+    public void muestraValidada(Muestra muestra) {
+        if (this.muestras.contains(muestra)) {
+            this.notificarValidacion(muestra);
+        }
     }
 
     public List<Muestra> getMuestrasDentro() {

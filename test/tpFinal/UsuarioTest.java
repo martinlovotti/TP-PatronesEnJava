@@ -15,13 +15,14 @@ class UsuarioTest {
 	Muestra muestraMock;
 	Usuario usuarioComun;
 	Usuario usuarioComun2;
-
+	SistemaWeb sitio;
 	
 	@BeforeEach
 	void setUp() {
 		muestraMock = mock(Muestra.class);
-		usuarioComun = new Usuario(111, false);
-		usuarioComun2 = new Usuario(222, false);
+		sitio = mock(SistemaWeb.class);
+		usuarioComun = new Usuario(111, false,sitio);
+		usuarioComun2 = new Usuario(222, false,sitio);
 	}
 	
 	

@@ -10,8 +10,10 @@ public class Usuario {
 	private EstadoUsuario estado;
 	HashMap<Muestra, LocalDate> envios;
 	HashMap<Muestra, LocalDate> opiniones;
+	private SistemaWeb sitio;
 	
-    public Usuario(int id, boolean esExpertoValidado) {
+	
+    public Usuario(int id, boolean esExpertoValidado, SistemaWeb sitio) {
         this.id = id;
         this.opiniones = new HashMap<>();
         this.envios = new HashMap<>();
@@ -21,15 +23,20 @@ public class Usuario {
         } else {
             this.estado = new EstadoUsuarioBasico();
         }
+        this.sitio = sitio; //Arreglar en test 
     }
     
-	
+    
 	public void SubirMuestra(Muestra m) {
 		estado.SubirMuestra(m,this);
 	}
 	
+
 	public void opinar(Muestra m, Vinchuca v) {
 		estado.opinar(m,v,this);
+		if (m.getEstadoActual() instanceof EstadoMuestraProcesoVerificado) {
+	         this.sitio.recibirVerificacion(m); //A partir de aca comienza el aviso a las organizaciones de que se verifico
+	    }
 	}
 	
 	
