@@ -6,7 +6,7 @@ public class SistemaWeb {
 	private AdministradorDeZonas adminZonas;
     private AdministradorDeMuestras adminMuestras;
 
-    public SistemaWeb() {
+    public SistemaWeb(AdministradorDeZonas adminZonas, AdministradorDeMuestras adminMuestras) {
         this.adminZonas = new AdministradorDeZonas();
         this.adminMuestras = new AdministradorDeMuestras();
     }
