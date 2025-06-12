@@ -2,6 +2,8 @@ package tpFinal;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -16,6 +18,7 @@ class MuestraTest {
 	Usuario usuarioMock3;
 	Usuario usuarioMock4;
 	Ubicacion ubiMock;
+	EstadoMuestraProceso estadoMock;
 	@BeforeEach
 	void setUp() {
 		usuarioMock = mock(Usuario.class);
@@ -24,6 +27,26 @@ class MuestraTest {
 		usuarioMock4 = mock(Usuario.class);
 		ubiMock = mock(Ubicacion.class);
 		muestraReal = new Muestra(Vinchuca.Ninguna, ubiMock, usuarioMock4);
+		
+	}
+	
+	@Test
+	void getIdentificacion() {
+		
+		assertEquals(muestraReal.identificacion(), 0);
+	}
+	
+	@Test
+	void getPropietarioID() {
+		
+		muestraReal.getPropietarioId();
+		verify(usuarioMock4, times(2)).getId(); //2 veces porque se llama cuando se crea la muestra y en la linea de arriba
+	}
+	
+	@Test
+	void getUbicacionMuestra() {
+		
+		assertEquals(muestraReal.getUbicacion(), ubiMock);
 	}
 	
 	@Test
