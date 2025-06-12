@@ -14,6 +14,14 @@ public class Organizacion implements Observador{
 	        this.tipo = tipo;
 	        this.cantidadDeEmpleados = empleados;
 	    }
+	    
+	    public void setFuncionalidadNuevaMuestra(FuncionalidadExterna funcionalidad) {
+	        this.funcionalidadNuevaMuestra = funcionalidad;
+	    }
+
+	    public void setFuncionalidadNuevaValidacion(FuncionalidadExterna funcionalidad) {
+	        this.funcionalidadNuevaValidacion = funcionalidad;
+	    }
 
 	    public String getNombre() {
 	        return nombre;
