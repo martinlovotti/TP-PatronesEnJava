@@ -1,5 +1,6 @@
 package tpFinal;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,6 +16,7 @@ public class zonaDeCobertura implements Observable {
         this.epicentro = epicentro;
         this.radioKm = radioKm;
         this.muestras = muestras;
+        this.observadores = new ArrayList<>(); 
     }
     
     @Override
