@@ -31,4 +31,9 @@ public class AdministradorDeMuestras {
                 .collect(Collectors.toList());
     }
 
+	public List<Muestra> buscar(CriterioBusqueda c) {
+		// TODO Auto-generated method stub
+		return c.filtrar(this.getTodas());
+	}
+
 }
