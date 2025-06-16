@@ -26,6 +26,9 @@ public class Usuario {
         this.sitio = sitio; //Arreglar en test 
     }
     
+    public Object getEstado() {
+        return this.estado;
+    }
     
 	public void SubirMuestra(Muestra m) {
 		estado.SubirMuestra(m,this);
