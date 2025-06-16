@@ -1,5 +1,6 @@
 package tpFinal;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,10 +13,22 @@ public class Muestra {
     private Usuario propietario;
     HashMap<Vinchuca, Integer> historial;
     EstadoMuestra estadoActual;
+    private LocalDate creacion;
+    private LocalDate fechaUltimaVotacion;
 
-
-
-
+    
+    public LocalDate getFechaCreacion() {
+    	return creacion;
+    }
+    
+    public LocalDate getFechaUltimaVotacion() {
+        return this.fechaUltimaVotacion;
+    }
+    
+    public void actualizarUltimaVotacion() {
+    	this.fechaUltimaVotacion = LocalDate.now();
+    }
+    
     public int identificacion() {
         return usuario;
     }
@@ -44,7 +57,8 @@ public class Muestra {
     public int obtenerVotosDe(Vinchuca v) {
         return historial.get(v);
     }
-
+    
+    //Inicializa a 0 todos los casos de votacion
     public void ponerA(){
         for (Vinchuca v : Vinchuca.values()) {
             historial.put(v, 0);
@@ -69,11 +83,14 @@ public class Muestra {
         this.opinion = opinion;
         this.ubicacion = ubicacion;
         this.usuario = propietario.getId();
+        this.creacion = LocalDate.now();
+        this.fechaUltimaVotacion = LocalDate.now();
         this.setPropietario(propietario);
         this.historial = new HashMap<>();
         this.ponerA();
         this.estadoActual = new EstadoMuestraProceso();
         this.agregarOpinion(opinion, propietario, this);
+        
     }
 
 

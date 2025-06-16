@@ -9,9 +9,11 @@ public class EstadoMuestraProceso extends EstadoMuestra {
 			m.estadoActual = new EstadoMuestraProcesoExperto();
 			m.ponerA();
 			m.historial.put(v, 1);
+			m.actualizarUltimaVotacion();
 		}else {
 			m.historial.put(v, (m.obtenerVotosDe(v))+1);
 			m.opinion = m.obtenerVinchucaConMasVotos();
+			m.actualizarUltimaVotacion();
 		}
 		
 	}
