@@ -2,6 +2,11 @@ package tpFinal;
 
 public class EstadoMuestraProceso extends EstadoMuestra {
 
+    @Override
+    public boolean esVerificada() {
+        return false;
+    }
+    
 	@Override
 	public void agregarOpinion(Vinchuca v, Usuario u, Muestra m) {
 		

@@ -72,4 +72,11 @@ class EstadoMuestraProcesoExpertoTest {
         // La opinion debe actualizarse al vinchuca con más votos
         assertEquals(vinchuca, muestra.opinion);
     }
+    
+    @Test
+    public void testEsVerificadaDevuelveFalse() {
+        EstadoMuestraProcesoExperto estado = new EstadoMuestraProcesoExperto();
+
+        assertFalse(estado.esVerificada(), "EstadoMuestraProcesoExperto debe devolver false en esVerificada");
+    }
 }

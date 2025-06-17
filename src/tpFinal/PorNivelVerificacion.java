@@ -7,8 +7,6 @@ public class PorNivelVerificacion implements CriterioBusqueda {
 
     @Override
     public boolean cumple(Muestra m) {
-        return verificada
-               ? m.getEstadoActual() instanceof EstadoMuestraProcesoVerificado
-               : m.getEstadoActual() instanceof EstadoMuestraProceso;
+        return m.getEstadoActual().esVerificada() == verificada;
     }
 }

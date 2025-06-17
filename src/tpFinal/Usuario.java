@@ -26,8 +26,13 @@ public class Usuario {
         this.sitio = sitio; //Arreglar en test 
     }
     
-    public Object getEstado() {
+    public EstadoUsuario getEstado() {
         return this.estado;
+    }
+    
+    // Método solo para testing 
+    public void setEstado(EstadoUsuario estado) {  
+        this.estado = estado;
     }
     
 	public void SubirMuestra(Muestra m) {
@@ -37,7 +42,7 @@ public class Usuario {
 
 	public void opinar(Muestra m, Vinchuca v) {
 		estado.opinar(m,v,this);
-		if (m.getEstadoActual() instanceof EstadoMuestraProcesoVerificado) {
+		if (m.getEstadoActual().esVerificada()) {
 	         this.sitio.recibirVerificacion(m); //A partir de aca comienza el aviso a las organizaciones de que se verifico
 	    }
 	}

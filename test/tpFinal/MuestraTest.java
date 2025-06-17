@@ -6,6 +6,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDate;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -30,6 +32,18 @@ class MuestraTest {
 		
 	}
 	
+    @Test
+    public void testGetFechaCreacion() {
+        // Esperamos que la fecha de creación sea "hoy"
+        assertEquals(LocalDate.now(), muestraReal.getFechaCreacion());
+    }
+
+    @Test
+    public void testGetFechaUltimaVotacionInicial() {
+        // Al crear la muestra, la última votación es también "hoy"
+        assertEquals(LocalDate.now(), muestraReal.getFechaUltimaVotacion());
+    }
+	
 	@Test
 	void getIdentificacion() {
 		
@@ -50,6 +64,12 @@ class MuestraTest {
 	}
 	
 	@Test
+	public void testGetEstadoActual() {
+	    // Cuando se crea una muestra, el estado inicial es EstadoMuestraProceso
+	    assertTrue(muestraReal.getEstadoActual() instanceof EstadoMuestraProceso);
+	}
+	
+	@Test
 	void SeCompruebaCreacionConValorDelConstructor() {
 		//muestraReal.agregarOpinion(Vinchuca.ImagenPocoClara, usuarioMock, muestraReal);
 		assertEquals(1, muestraReal.obtenerVotosDe(Vinchuca.Ninguna));
@@ -62,6 +82,22 @@ class MuestraTest {
 		
 		muestraReal.agregarOpinion(Vinchuca.ImagenPocoClara, usuarioMock, muestraReal);
 		assertEquals(1, muestraReal.obtenerVotosDe(Vinchuca.ImagenPocoClara));
+	}
+	
+	@Test
+	public void testFueVotadoConVoto() {
+	    // Simulamos que ya hubo un voto
+		muestraReal.historial.put(Vinchuca.Infestans, 1);
+
+	    assertTrue(muestraReal.fueVotado(Vinchuca.Infestans));
+	}
+
+	@Test
+	public void testFueVotadoSinVoto() {
+	    // Aseguramos que el valor es 0 (o nulo que se trata como 0)
+		muestraReal.historial.put(Vinchuca.Sordida, 0);
+
+	    assertFalse(muestraReal.fueVotado(Vinchuca.Sordida));
 	}
 	
 	@Test

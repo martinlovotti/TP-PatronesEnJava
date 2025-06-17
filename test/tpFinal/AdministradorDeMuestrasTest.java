@@ -2,6 +2,7 @@ package tpFinal;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
@@ -67,6 +68,28 @@ class AdministradorDeMuestrasTest {
         assertEquals(1, cercanas.size());
         assertTrue(cercanas.contains(muestra1));
         assertFalse(cercanas.contains(muestra2));
+    }
+    
+    @Test
+    public void testBuscarDelegacionAFiltrar() {
+        // Arrange
+        CriterioBusqueda criterioMock = mock(CriterioBusqueda.class);
+        List<Muestra> todasLasMuestras = List.of(muestra1, muestra2);
+        List<Muestra> resultadoEsperado = List.of(muestra1);
+
+        // Registramos las muestras
+        admin.registrarMuestra(muestra1);
+        admin.registrarMuestra(muestra2);
+
+        // Simulamos que el criterio devuelve solo muestra1
+        when(criterioMock.filtrar(todasLasMuestras)).thenReturn(resultadoEsperado);
+
+        // Act
+        List<Muestra> resultado = admin.buscar(criterioMock);
+
+        // Assert
+        assertEquals(resultadoEsperado, resultado);
+        verify(criterioMock).filtrar(todasLasMuestras);
     }
 
 }

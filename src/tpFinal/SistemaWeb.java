@@ -3,6 +3,8 @@ package tpFinal;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.mockito.ArgumentMatchers;
+
 public class SistemaWeb {
 	private AdministradorDeZonas adminZonas;
     private AdministradorDeMuestras adminMuestras;
@@ -50,5 +52,9 @@ public class SistemaWeb {
     public List<Muestra> buscar(CriterioBusqueda c){
     	return adminMuestras.buscar(c);
     }
+
+	public List<Organizacion> getOrganizaciones() {
+		return organizaciones;
+	}
 
 }

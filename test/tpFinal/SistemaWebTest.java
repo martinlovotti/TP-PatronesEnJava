@@ -29,6 +29,36 @@ public class SistemaWebTest {
     }
     
     @Test
+    void testSuscribeOrganizacionAZonaLlamaASuscribir() {
+        Organizacion orgMock = mock(Organizacion.class);
+        
+        sistema.suscribeOrganizacionAZona(orgMock, zonaMock);
+        
+        verify(zonaMock).suscribir(orgMock);
+    }
+    
+    @Test
+    void testRegistrarOrganizacionAgregaSiNoExiste() {
+        Organizacion orgMock = mock(Organizacion.class);
+        
+        sistema.registrarOrganizacion(orgMock);
+        
+        assertTrue(sistema.getOrganizaciones().contains(orgMock));
+    }
+    
+    @Test
+    void testRegistrarOrganizacionNoAgregaSiYaExiste() {
+        Organizacion orgMock = mock(Organizacion.class);
+        
+        sistema.registrarOrganizacion(orgMock);
+        int sizeBefore = sistema.getOrganizaciones().size();
+        
+        sistema.registrarOrganizacion(orgMock);
+        
+        assertEquals(sizeBefore, sistema.getOrganizaciones().size());
+    }
+    
+    @Test
     public void testRecibirMuestraRegistraEnMuestrasYZonas() {
         sistema.recibirMuestra(muestraMock);
 
@@ -69,6 +99,22 @@ public class SistemaWebTest {
     void testRegistrarZonaLlamaAlAdministradorDeZonas() {
         sistema.registrarZona(zonaMock);
         verify(adminZonasMock).registrarZona(zonaMock);
+    }
+    
+    @Test
+    void testBuscarDelegacionYResultado() {
+        // Arrange
+        CriterioBusqueda criterioMock = mock(CriterioBusqueda.class);
+        List<Muestra> resultadoEsperado = List.of(muestraMock);
+        
+        when(adminMuestrasMock.buscar(criterioMock)).thenReturn(resultadoEsperado);
+        
+        // Act
+        List<Muestra> resultado = sistema.buscar(criterioMock);
+        
+        // Assert
+        assertEquals(resultadoEsperado, resultado);
+        verify(adminMuestrasMock).buscar(criterioMock);
     }
 
 }
