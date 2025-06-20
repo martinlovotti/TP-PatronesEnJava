@@ -6,12 +6,14 @@ import java.util.stream.Collectors;
 public class Ubicacion {
 	private double latitud;
     private double longitud;
-
+    
+    //Constructor
     public Ubicacion(double latitud, double longitud) {
         this.latitud = latitud;
         this.longitud = longitud;
     }
-
+    
+    //Getters y Setters
     public double getLatitud() {
         return latitud;
     }
@@ -19,7 +21,8 @@ public class Ubicacion {
     public double getLongitud() {
         return longitud;
     }
-
+    
+    //Mensajes de ubicación
     public double distanciaA(Ubicacion otra) {
         // fórmula Haversine para calcular distancia en km
         double R = 6371; // Radio de la Tierra en km

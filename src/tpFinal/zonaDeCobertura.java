@@ -11,6 +11,7 @@ public class zonaDeCobertura implements Observable {
     private List<Muestra> muestras;
     private List<Observador> observadores;
     
+    //Constructor
     public zonaDeCobertura(String nombre, Ubicacion epicentro, double radioKm, List<Muestra> muestras) {
         this.nombre = nombre;
         this.epicentro = epicentro;
@@ -19,6 +20,27 @@ public class zonaDeCobertura implements Observable {
         this.observadores = new ArrayList<>(); 
     }
     
+    //Getters y Setters
+    public String getNombre() {
+        return nombre;
+    }
+
+    public Ubicacion getEpicentro() {
+        return epicentro;
+    }
+
+    public double getRadioKm() {
+        return radioKm;
+    }
+    
+    public List<Muestra> getMuestrasDentro() {
+        return muestras.stream()
+            .filter(m -> epicentro.distanciaA(m.getUbicacion()) <= radioKm)
+            .toList();
+    }
+    
+    
+    //Metodos de zonaDeCobertura
     @Override
     public void suscribir(Observador observador) {
         observadores.add(observador);
@@ -43,34 +65,17 @@ public class zonaDeCobertura implements Observable {
         }
     }
 
-    public String getNombre() {
-        return nombre;
-    }
-
-    public Ubicacion getEpicentro() {
-        return epicentro;
-    }
-
-    public double getRadioKm() {
-        return radioKm;
-    }
     
-    public void agregarMuestra(Muestra m) {
-        this.muestras.add(m);
-        this.notificarSubida(m);
-    }
-    
-    //Se invoca desde el adminDeZonas
+    //Se invoca desde el adminDeZonas y notifica validacion a sus observadores
     public void muestraValidada(Muestra muestra) {
         if (this.muestras.contains(muestra)) {
             this.notificarValidacion(muestra);
         }
     }
-
-    public List<Muestra> getMuestrasDentro() {
-        return muestras.stream()
-            .filter(m -> epicentro.distanciaA(m.getUbicacion()) <= radioKm)
-            .collect(Collectors.toList());
+    //Notifica la nueva muestra a sus observadores
+    public void agregarMuestra(Muestra m) {
+        this.muestras.add(m);
+        this.notificarSubida(m);
     }
 
     public boolean contieneMuestra(Muestra m) {

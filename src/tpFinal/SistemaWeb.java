@@ -10,11 +10,17 @@ public class SistemaWeb {
     private AdministradorDeMuestras adminMuestras;
     private List<Organizacion> organizaciones;
     
+    //Constructor
     public SistemaWeb(AdministradorDeZonas adminZonas, AdministradorDeMuestras adminMuestras) {
         this.adminZonas = adminZonas;
         this.adminMuestras = adminMuestras;
         this.organizaciones = new ArrayList<>();
     }
+    
+    //Getters y Setters
+    public List<Organizacion> getOrganizaciones() {
+		return organizaciones;
+	}
     
     public void suscribeOrganizacionAZona(Organizacion o, zonaDeCobertura z) {
     	z.suscribir(o); //Delega a zonaDeCobertura
@@ -25,7 +31,10 @@ public class SistemaWeb {
             organizaciones.add(org);
         }
     }
-
+    
+    
+    // Mensajes delegados a cada administrador
+    
     public void recibirMuestra(Muestra muestra) {
         adminMuestras.registrarMuestra(muestra);
         adminZonas.nuevaMuestra(muestra);
@@ -52,9 +61,4 @@ public class SistemaWeb {
     public List<Muestra> buscar(CriterioBusqueda c){
     	return adminMuestras.buscar(c);
     }
-
-	public List<Organizacion> getOrganizaciones() {
-		return organizaciones;
-	}
-
 }

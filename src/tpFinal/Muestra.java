@@ -15,8 +15,23 @@ public class Muestra {
     EstadoMuestra estadoActual;
     private LocalDate creacion;
     private LocalDate fechaUltimaVotacion;
-
     
+    //Constructor
+    public Muestra(Vinchuca opinion, Ubicacion ubicacion, Usuario propietario) {
+        this.opinion = opinion;
+        this.ubicacion = ubicacion;
+        this.usuario = propietario.getId();
+        this.creacion = LocalDate.now();
+        this.fechaUltimaVotacion = LocalDate.now();
+        this.setPropietario(propietario);
+        this.historial = new HashMap<>();
+        this.ponerA();
+        this.estadoActual = new EstadoMuestraProceso();
+        this.agregarOpinion(opinion, propietario, this);
+        
+    }
+    
+    //Getters y Setters
     public LocalDate getFechaCreacion() {
     	return creacion;
     }
@@ -41,30 +56,39 @@ public class Muestra {
     	return estadoActual;
     }
 
-
-    public void agregarOpinion(Vinchuca v, Usuario u, Muestra m) {
-        estadoActual.agregarOpinion(v,u,m);
-    }
-
     public Vinchuca getResultadoActual() {
         return opinion;
     }
-
-    public boolean fueVotado(Vinchuca v) {
-        return (historial.get(v) > 0);
+    
+ 
+    public void setPropietario(Usuario propietario) {
+        this.propietario = propietario;
     }
 
-    public int obtenerVotosDe(Vinchuca v) {
-        return historial.get(v);
+    public int getPropietarioId() {
+        return this.propietario.getId();
     }
     
-    //Inicializa a 0 todos los casos de votacion
+  //Inicializa a 0 todos los casos de votacion
     public void ponerA(){
         for (Vinchuca v : Vinchuca.values()) {
             historial.put(v, 0);
         }
     }
-
+    
+    //Métodos de muestra
+    public void agregarOpinion(Vinchuca v, Usuario u, Muestra m) {
+        estadoActual.agregarOpinion(v,u,m);
+    }
+    
+    public int obtenerVotosDe(Vinchuca v) {
+        return historial.get(v);
+    }
+    
+    public boolean fueVotado(Vinchuca v) {
+        return (historial.get(v) > 0);
+    }
+    
     public Vinchuca obtenerVinchucaConMasVotos() {
         Vinchuca resultado = null;
         int maxVotos = -1;
@@ -75,34 +99,7 @@ public class Muestra {
                 resultado = entrada.getKey();
             }
         }
-
         return resultado;
-    }
-
-    public Muestra(Vinchuca opinion, Ubicacion ubicacion, Usuario propietario) {
-        this.opinion = opinion;
-        this.ubicacion = ubicacion;
-        this.usuario = propietario.getId();
-        this.creacion = LocalDate.now();
-        this.fechaUltimaVotacion = LocalDate.now();
-        this.setPropietario(propietario);
-        this.historial = new HashMap<>();
-        this.ponerA();
-        this.estadoActual = new EstadoMuestraProceso();
-        this.agregarOpinion(opinion, propietario, this);
-        
-    }
-
-
-
-    public void setPropietario(Usuario propietario) {
-        this.propietario = propietario;
-    }
-
-
-
-    public int getPropietarioId() {
-        return this.propietario.getId();
     }
 
 }

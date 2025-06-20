@@ -3,7 +3,7 @@ package tpFinal;
 import java.time.LocalDate;
 
 public class EstadoUsuarioExperto extends EstadoUsuario {
-
+//Implementaciones propias de UsuarioExperto
 	@Override
 	public void SubirMuestra(Muestra m, Usuario u) {
 		u.getEnvios().put(m, LocalDate.now());
@@ -16,7 +16,6 @@ public class EstadoUsuarioExperto extends EstadoUsuario {
             m.agregarOpinion(v, u, m);
         } else {
         	System.out.println("El usuario no puede opinar sobre esta muestra.");
-        }
-		
+        }	
 	}
 }

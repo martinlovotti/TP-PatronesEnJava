@@ -12,7 +12,7 @@ public class Usuario {
 	HashMap<Muestra, LocalDate> opiniones;
 	private SistemaWeb sitio;
 	
-	
+	//Constructor
     public Usuario(int id, boolean esExpertoValidado, SistemaWeb sitio) {
         this.id = id;
         this.opiniones = new HashMap<>();
@@ -26,27 +26,48 @@ public class Usuario {
         this.sitio = sitio; //Arreglar en test 
     }
     
+    //Getters y Setters
     public EstadoUsuario getEstado() {
         return this.estado;
     }
+    
+    public HashMap<Muestra, LocalDate> getOpiniones() { 
+    	return opiniones; 
+    }
+    
+    public HashMap<Muestra, LocalDate> getEnvios() { 
+    	return envios; 
+    }
+    
+    public boolean isEsExperto() {
+		return esExperto;
+	}
+    
+	public boolean isesExpertoValidado() {
+		return esExpertoValidado;
+	}
+	
+	public int getId() {
+		return id;
+	}
     
     // Método solo para testing 
     public void setEstado(EstadoUsuario estado) {  
         this.estado = estado;
     }
     
+    
+    //Metodos de usuario 
 	public void SubirMuestra(Muestra m) {
 		estado.SubirMuestra(m,this);
 	}
 	
-
 	public void opinar(Muestra m, Vinchuca v) {
 		estado.opinar(m,v,this);
 		if (m.getEstadoActual().esVerificada()) {
 	         this.sitio.recibirVerificacion(m); //A partir de aca comienza el aviso a las organizaciones de que se verifico
 	    }
 	}
-	
 	
 	public void evaluarEstado(LocalDate fechaActual) {
 		if (esExpertoValidado) return; // si es experto validado el usuario nunca va a cambiar
@@ -66,37 +87,10 @@ public class Usuario {
         }
 	}
 	
-	
-    public HashMap<Muestra, LocalDate> getOpiniones() { 
-    	return opiniones; 
-    }
-    
-    public HashMap<Muestra, LocalDate> getEnvios() { 
-    	return envios; 
-    }
-    
-    
     public boolean puedeOpinarSobre(Muestra muestra) {
         boolean esOtraPersona = muestra.getPropietarioId() != this.id;
         boolean noHaOpinando = opiniones.containsKey(muestra) == false;
         return esOtraPersona && noHaOpinando;
     }
-	
-    
-    
-    public boolean isEsExperto() {
-		return esExperto;
-	}
-    
-    
-	public boolean isesExpertoValidado() {
-		return esExpertoValidado;
-	}
-	
-
-	
-	public int getId() {
-		return id;
-	}
 	
 }
