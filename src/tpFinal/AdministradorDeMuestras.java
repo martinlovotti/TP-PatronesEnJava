@@ -6,31 +6,39 @@ import java.util.stream.Collectors;
 
 public class AdministradorDeMuestras {
 	private List<Muestra> muestras;
-
+	
+	//Constructor
     public AdministradorDeMuestras() {
         this.muestras = new ArrayList<>();
     }
-
+    
+    //Getters
+    public List<Muestra> getTodas() {
+        return new ArrayList<>(muestras); // Para evitar modificación externa
+    }
+    
+    
+    //Add Muestras
     public void registrarMuestra(Muestra muestra) {
         this.muestras.add(muestra);
     }
 
-    public List<Muestra> getTodas() {
-        return new ArrayList<>(muestras); // Para evitar modificación externa
-    }
-
+    
+    //Métodos de filtrado en la Lista
+    
     public List<Muestra> muestrasCercanas(Ubicacion ubicacion, double distanciaKm) {
         return muestras.stream()
                 .filter(m -> m.getUbicacion().distanciaA(ubicacion) <= distanciaKm)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public List<Muestra> muestrasPorUsuario(int idUsuario) {
         return muestras.stream()
                 .filter(m -> m.identificacion() == idUsuario)
-                .collect(Collectors.toList());
+                .toList();
     }
-
+    
+    //Busqueda Composite
 	public List<Muestra> buscar(CriterioBusqueda c) {
 		// TODO Auto-generated method stub
 		return c.filtrar(this.getTodas());
