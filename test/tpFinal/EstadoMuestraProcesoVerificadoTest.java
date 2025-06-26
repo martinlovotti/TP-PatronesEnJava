@@ -57,5 +57,7 @@ class EstadoMuestraProcesoVerificadoTest {
 
         // La opinión no cambia
         assertEquals(Vinchuca.Ninguna, muestra.opinion);
+        
+        assertEquals(true, muestra.estadoActual.esVerificada());
     }
 }
