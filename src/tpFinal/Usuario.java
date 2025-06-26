@@ -51,11 +51,6 @@ public class Usuario {
 		return id;
 	}
     
-    // Método solo para testing 
-    public void setEstado(EstadoUsuario estado) {  
-        this.estado = estado;
-    }
-    
     
     //Metodos de usuario 
 	public void SubirMuestra(Muestra m) {

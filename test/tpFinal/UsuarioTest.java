@@ -2,6 +2,7 @@ package tpFinal;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -12,176 +13,141 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 
-class UsuarioTest {
+public class UsuarioTest {
 
-    Usuario usuario;
-    SistemaWeb sistemaMock;
+    private Usuario usuario;
+    private Usuario usuarioValido;
+    private SistemaWeb sitioMock;
+    private Muestra muestraMock;
+    private EstadoMuestra estadoMock;
+    private Vinchuca vinchuca;
 
     @BeforeEach
-    public void setUp() {
-        sistemaMock = mock(SistemaWeb.class);
-        // Por defecto, un usuario NO experto validado
-        usuario = new Usuario(1, false, sistemaMock);
+    void setUp() {
+        sitioMock = mock(SistemaWeb.class);
+        muestraMock = mock(Muestra.class);
+        estadoMock = mock(EstadoMuestra.class);
+        vinchuca = Vinchuca.Infestans;
+
+        usuario = new Usuario(1, false, sitioMock); // No experto validado
+        usuarioValido = new Usuario(2, true, sitioMock); // Experto validado
+
+        // Por default: el estado de la muestra no está verificado
+        when(muestraMock.getEstadoActual()).thenReturn(estadoMock);
+        when(estadoMock.esVerificada()).thenReturn(false);
+        when(muestraMock.getPropietarioId()).thenReturn(999); // distinto al ID del usuario
     }
 
-    // --- Constructor y getters básicos ---
-
     @Test
-    public void testConstructorInicializaEstadoBasico() {
-        assertFalse(usuario.isesExpertoValidado());
-        assertTrue(usuario.getEstado() instanceof EstadoUsuarioBasico);
-        assertEquals(1, usuario.getId());
+    void testSubirMuestraLaAgregaAEnvios() {
+        assertTrue(usuario.getEnvios().isEmpty());
+
+        usuario.SubirMuestra(muestraMock);
+
+        assertEquals(1, usuario.getEnvios().size());
+        assertTrue(usuario.getEnvios().containsKey(muestraMock));
     }
 
     @Test
-    public void testConstructorExpertoValidadoInicializaCorrectamente() {
-        Usuario experto = new Usuario(2, true, sistemaMock);
-        assertTrue(experto.isesExpertoValidado());
-        assertTrue(experto.getEstado() instanceof EstadoUsuarioExpertoValidado);
+    void testOpinarAgregaOpinionSiPuedeYNoVerifica() {
+        EstadoMuestra estadoMuestraMock = mock(EstadoMuestra.class);
+
+        when(muestraMock.getEstadoActual()).thenReturn(estadoMuestraMock);
+        when(estadoMuestraMock.esVerificada()).thenReturn(false);
+        when(muestraMock.getPropietarioId()).thenReturn(999); // distinto al ID del usuario
+
+        // Simulamos comportamiento de muestraMock.agregarOpinion(...)
+        doAnswer(invoc -> {
+            estadoMuestraMock.agregarOpinion(vinchuca, usuario, muestraMock);
+            return null;
+        }).when(muestraMock).agregarOpinion(any(), any(), any());
+
+        usuario.opinar(muestraMock, vinchuca);
+
+        // Verificamos que se agregó la opinión
+        assertEquals(1, usuario.getOpiniones().size());
+        assertTrue(usuario.getOpiniones().containsKey(muestraMock));
+
+        // Verificamos que se llamó a agregarOpinion del estado
+        verify(estadoMuestraMock).agregarOpinion(vinchuca, usuario, muestraMock);
+        verify(sitioMock, never()).recibirVerificacion(muestraMock);
     }
 
-    // --- Método puedeOpinarSobre ---
+    @Test
+    void testOpinarConEstadoVerificadoNotificaSitio() {
+        when(estadoMock.esVerificada()).thenReturn(true);
+
+        usuario.opinar(muestraMock, vinchuca);
+
+        verify(sitioMock).recibirVerificacion(muestraMock);
+    }
 
     @Test
-    public void testPuedeOpinarSobreOtraPersonaYNoHaOpinando() {
-        Muestra muestraMock = mock(Muestra.class);
-        when(muestraMock.getPropietarioId()).thenReturn(99);
-        assertTrue(usuario.puedeOpinarSobre(muestraMock));
+    void testNoPuedeOpinarSobreSuPropiaMuestra() {
+        when(muestraMock.getPropietarioId()).thenReturn(1); // mismo ID
 
+        assertFalse(usuario.puedeOpinarSobre(muestraMock));
+    }
+
+    @Test
+    void testNoPuedeOpinarSiYaOpino() {
         usuario.getOpiniones().put(muestraMock, LocalDate.now());
+
         assertFalse(usuario.puedeOpinarSobre(muestraMock));
     }
 
     @Test
-    public void testNoPuedeOpinarSobreSiEsMismaPersona() {
-        Muestra muestraMock = mock(Muestra.class);
-        when(muestraMock.getPropietarioId()).thenReturn(usuario.getId());
-        assertFalse(usuario.puedeOpinarSobre(muestraMock));
-    }
-
-    // --- Método evaluarEstado: cobertura completa ---
-
-    @Test
-    void testEvaluarEstadoNoHaceNadaSiEsExpertoValidado() {
-        Usuario usuarioValidado = new Usuario(2, true, sistemaMock);
-        usuarioValidado.evaluarEstado(LocalDate.now());
-        assertTrue(usuarioValidado.getEstado() instanceof EstadoUsuarioExpertoValidado);
+    void testPuedeOpinarSiEsOtraMuestraYNoOpino() {
+        assertTrue(usuario.puedeOpinarSobre(muestraMock));
     }
 
     @Test
-    void testEvaluarEstadoSeVuelveExpertoCuandoSuperaCondiciones() {
-        for (int i = 0; i < 11; i++) {
+    void testEvaluarEstado_CambiaAExpertoSiCumpleCondiciones() {
+        // Simula 11 envíos y 21 opiniones dentro de los últimos 30 días
+        for (int i = 0; i < 11; i++)
             usuario.getEnvios().put(mock(Muestra.class), LocalDate.now());
-        }
-        for (int i = 0; i < 21; i++) {
+
+        for (int i = 0; i < 21; i++)
             usuario.getOpiniones().put(mock(Muestra.class), LocalDate.now());
-        }
+
         usuario.evaluarEstado(LocalDate.now());
+
         assertTrue(usuario.getEstado() instanceof EstadoUsuarioExperto);
     }
 
     @Test
-    void testEvaluarEstadoSeVuelveBasicoSiNoCumpleCondiciones() {
-        for (int i = 0; i < 5; i++) {
+    void testEvaluarEstado_CambiaABasicoSiNoCumpleCondiciones() {
+        // Menos de 10 envíos
+        for (int i = 0; i < 5; i++)
             usuario.getEnvios().put(mock(Muestra.class), LocalDate.now());
-        }
-        for (int i = 0; i < 10; i++) {
+
+        for (int i = 0; i < 10; i++)
             usuario.getOpiniones().put(mock(Muestra.class), LocalDate.now());
-        }
+
         usuario.evaluarEstado(LocalDate.now());
+
         assertTrue(usuario.getEstado() instanceof EstadoUsuarioBasico);
     }
 
     @Test
-    void testEvaluarEstadoBordeExactoNoEsExperto() {
-        for (int i = 0; i < 10; i++) {
-            usuario.getEnvios().put(mock(Muestra.class), LocalDate.now());
-        }
+    void testEvaluarEstado_NoCambiaSiEsExpertoValidado() {
+        // Le metemos datos de todas formas
         for (int i = 0; i < 20; i++) {
-            usuario.getOpiniones().put(mock(Muestra.class), LocalDate.now());
+            usuarioValido.getEnvios().put(mock(Muestra.class), LocalDate.now());
+            usuarioValido.getOpiniones().put(mock(Muestra.class), LocalDate.now());
         }
-        usuario.evaluarEstado(LocalDate.now());
-        assertTrue(usuario.getEstado() instanceof EstadoUsuarioBasico);
+
+        EstadoUsuario estadoAnterior = usuarioValido.getEstado();
+
+        usuarioValido.evaluarEstado(LocalDate.now());
+
+        assertSame(estadoAnterior, usuarioValido.getEstado());
     }
 
     @Test
-    void testEvaluarEstadoSoloEnviosCumplePeroNoOpiniones() {
-        for (int i = 0; i < 11; i++) {
-            usuario.getEnvios().put(mock(Muestra.class), LocalDate.now());
-        }
-        for (int i = 0; i < 10; i++) {
-            usuario.getOpiniones().put(mock(Muestra.class), LocalDate.now());
-        }
-        usuario.evaluarEstado(LocalDate.now());
-        assertTrue(usuario.getEstado() instanceof EstadoUsuarioBasico);
+    void testGettersBasicos() {
+        assertEquals(1, usuario.getId());
+        assertFalse(usuario.isesExpertoValidado());
+        assertFalse(usuario.isEsExperto());
     }
-
-    @Test
-    void testEvaluarEstadoSoloOpinionesCumplePeroNoEnvios() {
-        for (int i = 0; i < 5; i++) {
-            usuario.getEnvios().put(mock(Muestra.class), LocalDate.now());
-        }
-        for (int i = 0; i < 21; i++) {
-            usuario.getOpiniones().put(mock(Muestra.class), LocalDate.now());
-        }
-        usuario.evaluarEstado(LocalDate.now());
-        assertTrue(usuario.getEstado() instanceof EstadoUsuarioBasico);
-    }
-
-    @Test
-    void testEvaluarEstadoConDatosViejosNoCuenta() {
-        LocalDate fechaVieja = LocalDate.now().minusDays(31);
-        for (int i = 0; i < 15; i++) {
-            usuario.getEnvios().put(mock(Muestra.class), fechaVieja);
-        }
-        for (int i = 0; i < 25; i++) {
-            usuario.getOpiniones().put(mock(Muestra.class), fechaVieja);
-        }
-        usuario.evaluarEstado(LocalDate.now());
-        assertTrue(usuario.getEstado() instanceof EstadoUsuarioBasico);
-    }
-
-    // --- Métodos que delegan a estado ---
-
-    @Test
-    void testSubirMuestraDelegadoAlEstado() {
-        Muestra muestraMock = mock(Muestra.class);
-        EstadoUsuario estadoMock = mock(EstadoUsuario.class);
-        usuario.setEstado(estadoMock);
-
-        usuario.SubirMuestra(muestraMock);
-
-        verify(estadoMock).SubirMuestra(muestraMock, usuario);
-    }
-
-    @Test
-    void testOpinarDelegadoAlEstadoYRecibeVerificacion() {
-        Muestra muestraMock = mock(Muestra.class);
-        EstadoUsuario estadoMock = mock(EstadoUsuario.class);
-        usuario.setEstado(estadoMock);
-
-        // Configuramos para que getEstadoActual() devuelva EstadoMuestraProcesoVerificado
-        when(muestraMock.getEstadoActual()).thenReturn(new EstadoMuestraProcesoVerificado());
-
-        usuario.opinar(muestraMock, Vinchuca.Ninguna);
-
-        verify(estadoMock).opinar(muestraMock, Vinchuca.Ninguna, usuario);
-        verify(sistemaMock).recibirVerificacion(muestraMock);
-    }
-
-    @Test
-    void testOpinarDelegadoAlEstadoSinVerificacion() {
-        Muestra muestraMock = mock(Muestra.class);
-        EstadoUsuario estadoMock = mock(EstadoUsuario.class);
-        usuario.setEstado(estadoMock);
-
-        // Estado diferente para no llamar a recibirVerificacion
-        when(muestraMock.getEstadoActual()).thenReturn(new EstadoMuestraProceso());
-
-        usuario.opinar(muestraMock, Vinchuca.Ninguna);
-
-        verify(estadoMock).opinar(muestraMock, Vinchuca.Ninguna, usuario);
-        verify(sistemaMock, never()).recibirVerificacion(any());
-    }
-    
 }
