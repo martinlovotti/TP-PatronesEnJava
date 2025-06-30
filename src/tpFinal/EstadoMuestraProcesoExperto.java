@@ -2,6 +2,9 @@ package tpFinal;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class EstadoMuestraProcesoExperto extends EstadoMuestra {
 	private List<Vinchuca> opinionesExpertos; 
@@ -22,12 +25,10 @@ public class EstadoMuestraProcesoExperto extends EstadoMuestra {
     
 	@Override
 	public void agregarOpinion(Vinchuca v, Usuario u, Muestra m) {
-		// TODO Auto-generated method stub
 		if(u.isEsExperto() && m.fueVotado(v)) {
 			//m.historial.put(v, (m.obtenerVotosDe(v))+1);
-			m.realizarOpinion(v);
 			addOpinion(v);
-			calcularResultado(m);
+			m.realizarOpinion(v);
 			m.setEstadoMuestra(new EstadoMuestraProcesoVerificado());
 			//m.opinion = m.obtenerVinchucaConMasVotos();
 			//m.actualizarUltimaVotacion();
@@ -38,13 +39,22 @@ public class EstadoMuestraProcesoExperto extends EstadoMuestra {
 				//m.historial.put(v, (m.obtenerVotosDe(v))+1);
 				//m.actualizarUltimaVotacion();
 			}else {
-			System.out.print("No se puede votar"); 
+				System.out.print("No se puede votar"); 
 			}
 		}
 	}
 
 	@Override
-	public void calcularResultado(Muestra m) {
+	public Vinchuca calcularResultado(Muestra m) {
 		// Aca se debe calcular con la lista de opinionesExpertos y hacerle el setOpinion a esa muestra
+		return this.opinionesExpertos.stream()
+		        .collect(Collectors.groupingBy(
+		            Function.identity(),
+		            Collectors.counting()
+		        ))
+		        .entrySet().stream()
+		        .max(Map.Entry.comparingByValue())
+		        .map(Map.Entry::getKey)
+		        .orElse(null);
 	}
 }
