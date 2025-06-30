@@ -37,26 +37,6 @@ public class SistemaWebTest {
         verify(zonaMock).suscribir(orgMock);
     }
     
-    @Test
-    void testRegistrarOrganizacionAgregaSiNoExiste() {
-        Organizacion orgMock = mock(Organizacion.class);
-        
-        sistema.registrarOrganizacion(orgMock);
-        
-        assertTrue(sistema.getOrganizaciones().contains(orgMock));
-    }
-    
-    @Test
-    void testRegistrarOrganizacionNoAgregaSiYaExiste() {
-        Organizacion orgMock = mock(Organizacion.class);
-        
-        sistema.registrarOrganizacion(orgMock);
-        int sizeBefore = sistema.getOrganizaciones().size();
-        
-        sistema.registrarOrganizacion(orgMock);
-        
-        assertEquals(sizeBefore, sistema.getOrganizaciones().size());
-    }
     
     @Test
     public void testRecibirMuestraRegistraEnMuestrasYZonas() {

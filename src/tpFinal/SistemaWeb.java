@@ -8,33 +8,22 @@ import org.mockito.ArgumentMatchers;
 public class SistemaWeb {
 	private AdministradorDeZonas adminZonas;
     private AdministradorDeMuestras adminMuestras;
-    private List<Organizacion> organizaciones;
+    
     
     //Constructor
     public SistemaWeb(AdministradorDeZonas adminZonas, AdministradorDeMuestras adminMuestras) {
         this.adminZonas = adminZonas;
         this.adminMuestras = adminMuestras;
-        this.organizaciones = new ArrayList<>();
     }
     
     //Getters y Setters
-    public List<Organizacion> getOrganizaciones() {
-		return organizaciones;
-	}
-    
+   
     public void suscribeOrganizacionAZona(Organizacion o, zonaDeCobertura z) {
     	z.suscribir(o); //Delega a zonaDeCobertura
     }
     
-    public void registrarOrganizacion(Organizacion org) {
-        if (!organizaciones.contains(org)) {
-            organizaciones.add(org);
-        }
-    }
-    
     
     // Mensajes delegados a cada administrador
-    
     public void recibirMuestra(Muestra muestra) {
         adminMuestras.registrarMuestra(muestra);
         adminZonas.nuevaMuestra(muestra);
