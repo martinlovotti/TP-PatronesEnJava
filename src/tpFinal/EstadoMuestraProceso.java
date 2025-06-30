@@ -11,16 +11,24 @@ public class EstadoMuestraProceso extends EstadoMuestra {
 	public void agregarOpinion(Vinchuca v, Usuario u, Muestra m) {
 		
 		if(u.isEsExperto()) {
-			m.estadoActual = new EstadoMuestraProcesoExperto();
-			m.ponerA();
-			m.historial.put(v, 1);
-			m.actualizarUltimaVotacion();
+			m.realizarOpinion(v);
+			m.setEstadoMuestra(new EstadoMuestraProcesoExperto());
+			//m.estadoActual = new EstadoMuestraProcesoExperto();
+			//m.historial.put(v, 1);
+			//m.actualizarUltimaVotacion();
+			
 		}else {
-			m.historial.put(v, (m.obtenerVotosDe(v))+1);
-			m.opinion = m.obtenerVinchucaConMasVotos();
-			m.actualizarUltimaVotacion();
+			m.realizarOpinion(v);
+			//m.historial.put(v, (m.obtenerVotosDe(v))+1);
+			//m.setOpinion(m.obtenerVinchucaConMasVotos());
+			//m.actualizarUltimaVotacion();
 		}
 		
+	}
+
+	@Override
+	public void calcularResultado(Muestra m) {
+		m.setOpinion(m.obtenerVinchucaConMasVotos());
 	}
 
 }
