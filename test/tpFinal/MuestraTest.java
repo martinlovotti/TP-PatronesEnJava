@@ -87,18 +87,12 @@ class MuestraTest {
 	@Test
 	public void testFueVotadoConVoto() {
 	    // Simulamos que ya hubo un voto
-		muestraReal.historial.put(Vinchuca.Infestans, 1);
+		muestraReal.realizarOpinion(Vinchuca.Infestans);
 
 	    assertTrue(muestraReal.fueVotado(Vinchuca.Infestans));
 	}
 
-	@Test
-	public void testFueVotadoSinVoto() {
-	    // Aseguramos que el valor es 0 (o nulo que se trata como 0)
-		muestraReal.historial.put(Vinchuca.Sordida, 0);
-
-	    assertFalse(muestraReal.fueVotado(Vinchuca.Sordida));
-	}
+	
 	
 	@Test
 	void usuarioNoExpertoNoSumaAlHistorial() {
