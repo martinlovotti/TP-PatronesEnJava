@@ -13,8 +13,8 @@ public class EstadoMuestraProcesoVerificado extends EstadoMuestra {
 	}
 
 	@Override
-	public void calcularResultado(Muestra m) {
-		System.out.print("No se puede votar, muestra verificada" + m.getResultadoActual());
+	public Vinchuca calcularResultado(Muestra m) {
+		return m.getOpinion();
 	}
 
 }

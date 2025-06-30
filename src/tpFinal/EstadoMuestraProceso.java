@@ -27,8 +27,8 @@ public class EstadoMuestraProceso extends EstadoMuestra {
 	}
 
 	@Override
-	public void calcularResultado(Muestra m) {
-		m.setOpinion(m.obtenerVinchucaConMasVotos());
+	public Vinchuca calcularResultado(Muestra m) {
+		return m.obtenerVinchucaConMasVotos();
 	}
 
 }
