@@ -66,10 +66,14 @@ public class Muestra {
     public EstadoMuestra getEstadoActual() {
     	return estadoActual;
     }
-
+    
+    public Vinchuca getOpinion() {
+    	return this.opinion;
+    }
+    
+    //Cada vez que se solicite el resultado dependerá del estado en el que se encuentra
     public Vinchuca getResultadoActual() {
-        estadoActual.calcularResultado(this);
-    	return opinion;
+       return estadoActual.calcularResultado(this);
     }
     
  
@@ -116,7 +120,7 @@ public class Muestra {
     //Metodo que encapsula operaciones de opinar
     public void realizarOpinion(Vinchuca v) {
     	this.addOpinion(v);
-    	this.setOpinion(obtenerVinchucaConMasVotos());
+    	this.setOpinion(getResultadoActual()); //El getResultadoActualDependerá del estado
     	this.actualizarUltimaVotacion();
     }
     
