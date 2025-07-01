@@ -65,7 +65,6 @@ public class Usuario {
 	}
 	
 	public void evaluarEstado(LocalDate fechaActual) {
-		if (esExpertoValidado) return; // si es experto validado el usuario nunca va a cambiar
 		
 	    long enviosRecientes = envios.values().stream() // cuenta la cantidad de envios 
 	            .filter(fecha -> !fecha.isBefore(fechaActual.minusDays(30)))

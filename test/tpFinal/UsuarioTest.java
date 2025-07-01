@@ -129,20 +129,7 @@ public class UsuarioTest {
         assertTrue(usuario.getEstado() instanceof EstadoUsuarioBasico);
     }
 
-    @Test
-    void testEvaluarEstado_NoCambiaSiEsExpertoValidado() {
-        // Le metemos datos de todas formas
-        for (int i = 0; i < 20; i++) {
-            usuarioValido.getEnvios().put(mock(Muestra.class), LocalDate.now());
-            usuarioValido.getOpiniones().put(mock(Muestra.class), LocalDate.now());
-        }
 
-        EstadoUsuario estadoAnterior = usuarioValido.getEstado();
-
-        usuarioValido.evaluarEstado(LocalDate.now());
-
-        assertSame(estadoAnterior, usuarioValido.getEstado());
-    }
 
     @Test
     void testGettersBasicos() {

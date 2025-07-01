@@ -7,6 +7,7 @@ public class EstadoUsuarioBasico extends EstadoUsuario{
 	@Override
 	public void SubirMuestra(Muestra m, Usuario u) {
 		u.getEnvios().put(m, LocalDate.now());
+		u.evaluarEstado(LocalDate.now());
 	}
 
 	@Override
@@ -14,6 +15,7 @@ public class EstadoUsuarioBasico extends EstadoUsuario{
         if (u.puedeOpinarSobre(m)) {
             u.getOpiniones().put(m, LocalDate.now());
             m.agregarOpinion(v, u, m);
+            u.evaluarEstado(LocalDate.now());
         } else {
         	System.out.println("El usuario no puede opinar sobre esta muestra.");
         }

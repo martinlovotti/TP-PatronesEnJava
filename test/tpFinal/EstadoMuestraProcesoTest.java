@@ -2,8 +2,11 @@ package tpFinal;
 
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -11,67 +14,51 @@ import org.junit.jupiter.api.Test;
 
 class EstadoMuestraProcesoTest {
 
-    private EstadoMuestraProceso estado;
-    private Muestra muestra;
-    private Usuario usuarioExperto;
-    private Usuario usuarioNoExperto;
-    private Vinchuca vinchuca;
+    EstadoMuestraProceso estado;
+    Muestra muestraMock;
+    Usuario usuarioMock;
+    Vinchuca vinchuca;
 
     @BeforeEach
-    public void setup() {
+    void setUp() {
         estado = new EstadoMuestraProceso();
-
-        // Mock de propietario (necesario para Muestra)
-        Usuario propietario = mock(Usuario.class);
-        when(propietario.getId()).thenReturn(1);
-
-        // Instancia real de Muestra con historial inicializado
-        muestra = new Muestra(Vinchuca.Ninguna, new Ubicacion(1, 2), propietario);
-
-        usuarioExperto = mock(Usuario.class);
-        when(usuarioExperto.isEsExperto()).thenReturn(true);
-        when(usuarioExperto.getId()).thenReturn(2);
-
-        usuarioNoExperto = mock(Usuario.class);
-        when(usuarioNoExperto.isEsExperto()).thenReturn(false);
-        when(usuarioNoExperto.getId()).thenReturn(3);
-
+        muestraMock = mock(Muestra.class);
+        usuarioMock = mock(Usuario.class);
         vinchuca = Vinchuca.Infestans;
     }
 
     @Test
-    public void testAgregarOpinionConUsuarioExperto_CambiaEstadoYPoneA() {
-        // Poner valores diferentes en historial antes de la opinión experta
-        muestra.historial.put(Vinchuca.Sordida, 5);
-        muestra.historial.put(Vinchuca.Infestans, 2);
-
-        estado.agregarOpinion(vinchuca, usuarioExperto, muestra);
-
-        // Verificamos que el estado cambió
-        assertTrue(muestra.getEstadoActual() instanceof EstadoMuestraProcesoExperto);
-
-        // Verificamos que se reinició el historial
-        for (Vinchuca v : Vinchuca.values()) {
-            int votos = muestra.historial.get(v);
-            if (v == vinchuca) {
-                assertEquals(1, votos); // El experto votó esta
-            } else {
-                assertEquals(0, votos);
-            }
-        }
+    void testEsVerificadaDevuelveFalse() {
+        assertFalse(estado.esVerificada());
     }
 
     @Test
-    public void testAgregarOpinionConUsuarioNoExperto_SumaVotoYActualizaOpinion() {
-        // Dejar historial limpio
-        muestra.historial.put(vinchuca, 0);
-        muestra.opinion = Vinchuca.Ninguna;
+    void testAgregarOpinionUsuarioExpertoActualizaEstado() {
+        when(usuarioMock.isEsExperto()).thenReturn(true);
 
-        estado.agregarOpinion(vinchuca, usuarioNoExperto, muestra);
+        estado.agregarOpinion(vinchuca, usuarioMock, muestraMock);
 
-        // Verifica que el voto se incrementa
-        assertEquals(1, muestra.obtenerVotosDe(vinchuca));
+        verify(muestraMock).realizarOpinion(vinchuca);
+        verify(muestraMock).setEstadoMuestra(any(EstadoMuestraProcesoExperto.class));
     }
 
+    @Test
+    void testAgregarOpinionUsuarioNoExpertoNoCambiaEstado() {
+        when(usuarioMock.isEsExperto()).thenReturn(false);
 
+        estado.agregarOpinion(vinchuca, usuarioMock, muestraMock);
+
+        verify(muestraMock).realizarOpinion(vinchuca);
+        verify(muestraMock, never()).setEstadoMuestra(any());
+    }
+
+    @Test
+    void testCalcularResultadoDelegadoAMuestra() {
+        Vinchuca esperado = Vinchuca.Sordida;
+        when(muestraMock.obtenerVinchucaConMasVotos()).thenReturn(esperado);
+
+        Vinchuca resultado = estado.calcularResultado(muestraMock);
+
+        assertEquals(esperado, resultado);
+    }
 }

@@ -1,63 +1,49 @@
 package tpFinal;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
-import java.util.HashMap;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class EstadoMuestraProcesoVerificadoTest {
 
+
     private EstadoMuestraProcesoVerificado estado;
-    private Muestra muestra;
-    private Usuario usuario;
+    private Muestra muestraMock;
+    private Usuario usuarioMock;
     private Vinchuca vinchuca;
 
     @BeforeEach
-    public void setup() {
+    void setUp() {
         estado = new EstadoMuestraProcesoVerificado();
-
-        usuario = mock(Usuario.class);
-        when(usuario.isEsExperto()).thenReturn(true);
-        when(usuario.getId()).thenReturn(1);
-
-        muestra = spy(new Muestra(Vinchuca.Ninguna, null, usuario));
-
-        HashMap<Vinchuca, Integer> historialLimpio = new HashMap<>();
-        for (Vinchuca v : Vinchuca.values()) {
-            historialLimpio.put(v, 0);
-        }
-        muestra.historial = historialLimpio;
-
-        muestra.estadoActual = estado;
-
+        muestraMock = mock(Muestra.class);
+        usuarioMock = mock(Usuario.class);
         vinchuca = Vinchuca.Infestans;
     }
 
     @Test
-    public void testAgregarOpinion_NoModificaMuestra() {
-        // Act
-        estado.agregarOpinion(vinchuca, usuario, muestra);
+    void testEsVerificadaDevuelveTrue() {
+        assertTrue(estado.esVerificada());
+    }
 
-        // Assert
-        // Verificamos que no se haya modificado historial ni opinion ni estadoActual
-        verify(muestra, never()).ponerA();
-        verify(muestra, never()).obtenerVotosDe(any());
-        verify(muestra, never()).obtenerVinchucaConMasVotos();
+    @Test
+    void testAgregarOpinionNoHaceNada() {
+        // No hay efecto observable directo, solo se imprime algo (que no se testea normalmente)
+        estado.agregarOpinion(vinchuca, usuarioMock, muestraMock);
 
-        // El estado debe seguir siendo el mismo
-        assertSame(estado, muestra.estadoActual);
+        // Verificamos que la muestra no fue modificada
+        verifyNoInteractions(muestraMock);
+    }
 
-        // La opinión no cambia
-        assertEquals(Vinchuca.Ninguna, muestra.opinion);
-        
-        assertEquals(true, muestra.estadoActual.esVerificada());
+    @Test
+    void testCalcularResultadoDevuelveOpinionActual() {
+        when(muestraMock.getOpinion()).thenReturn(Vinchuca.Sordida);
+
+        Vinchuca resultado = estado.calcularResultado(muestraMock);
+        assertEquals(Vinchuca.Sordida, resultado);
     }
 }

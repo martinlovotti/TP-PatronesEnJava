@@ -1,8 +1,11 @@
 package tpFinal;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 
@@ -13,70 +16,74 @@ import org.junit.jupiter.api.Test;
 
 class EstadoMuestraProcesoExpertoTest {
 
-    private EstadoMuestraProcesoExperto estado;
-    private Muestra muestra;
-    private Usuario usuarioExperto;
-    private Vinchuca vinchuca;
+    EstadoMuestraProcesoExperto estado;
+    Muestra muestraMock;
+    Usuario usuarioMock;
+    Vinchuca vinchuca;
 
     @BeforeEach
-    public void setup() {
+    void setUp() {
         estado = new EstadoMuestraProcesoExperto();
-
-        usuarioExperto = mock(Usuario.class);
-        when(usuarioExperto.isEsExperto()).thenReturn(true);
-        when(usuarioExperto.getId()).thenReturn(1);
-
-        muestra = spy(new Muestra(Vinchuca.Ninguna, null, usuarioExperto));
-
-        HashMap<Vinchuca, Integer> historialLimpio = new HashMap<>();
-        for (Vinchuca v : Vinchuca.values()) {
-            historialLimpio.put(v, 0);
-        }
-
-        // Asignar el campo directamente, sin usar doReturn()
-        muestra.historial = historialLimpio;
-
-        muestra.estadoActual = estado;
-
+        muestraMock = mock(Muestra.class);
+        usuarioMock = mock(Usuario.class);
         vinchuca = Vinchuca.Infestans;
     }
 
     @Test
-    public void testAgregarOpinionExpertoNoVotoPrevio() {
-        // No hay votos previos para vinchuca, historial.get(vinchuca) == 0
-
-        estado.agregarOpinion(vinchuca, usuarioExperto, muestra);
-
-        // El voto para vinchuca debe pasar a 1
-        assertEquals(1, muestra.historial.get(vinchuca));
-
-        // Estado no cambia porque no había voto previo (según tu lógica)
-        assertSame(estado, muestra.estadoActual);
-
-        // La opinion puede no cambiar aún o ser la vinchuca (depende de la lógica)
+    void testEsVerificadaDevuelveFalse() {
+        assertFalse(estado.esVerificada());
     }
 
     @Test
-    public void testAgregarOpinionExpertoYaVoto() {
-        // Simulamos voto previo para vinchuca
-        muestra.historial.put(vinchuca, 1);
+    void testAgregarOpinionExpertoYVotoPrevioCambiaEstado() {
+        when(usuarioMock.isEsExperto()).thenReturn(true);
+        when(muestraMock.fueVotado(vinchuca)).thenReturn(true);
 
-        estado.agregarOpinion(vinchuca, usuarioExperto, muestra);
+        estado.agregarOpinion(vinchuca, usuarioMock, muestraMock);
 
-        // El voto para vinchuca debe pasar a 2
-        assertEquals(2, muestra.historial.get(vinchuca));
-
-        // El estado debe cambiar a EstadoMuestraProcesoVerificado
-        assertTrue(muestra.estadoActual instanceof EstadoMuestraProcesoVerificado);
-
-        // La opinion debe actualizarse al vinchuca con más votos
-        assertEquals(vinchuca, muestra.opinion);
+        verify(muestraMock).realizarOpinion(vinchuca);
+        verify(muestraMock).setEstadoMuestra(any(EstadoMuestraProcesoVerificado.class));
     }
-    
-    @Test
-    public void testEsVerificadaDevuelveFalse() {
-        EstadoMuestraProcesoExperto estado = new EstadoMuestraProcesoExperto();
 
-        assertFalse(estado.esVerificada(), "EstadoMuestraProcesoExperto debe devolver false en esVerificada");
+    @Test
+    void testAgregarOpinionExpertoSinVotoPrevioNoCambiaEstado() {
+        when(usuarioMock.isEsExperto()).thenReturn(true);
+        when(muestraMock.fueVotado(vinchuca)).thenReturn(false);
+
+        estado.agregarOpinion(vinchuca, usuarioMock, muestraMock);
+
+        verify(muestraMock).realizarOpinion(vinchuca);
+        verify(muestraMock, never()).setEstadoMuestra(any());
+    }
+
+    @Test
+    void testAgregarOpinionNoExpertoNoHaceNada() {
+        when(usuarioMock.isEsExperto()).thenReturn(false);
+
+        estado.agregarOpinion(vinchuca, usuarioMock, muestraMock);
+
+        verify(muestraMock, never()).realizarOpinion(any());
+        verify(muestraMock, never()).setEstadoMuestra(any());
+    }
+
+    @Test
+    void testCalcularResultadoDevuelveTipoMasFrecuente() {
+        // Opiniones: Infestans x3, Sordida x2
+        estado.agregarOpinion(Vinchuca.Infestans, usuarioExpertoMock(true, true), muestraMock);
+        estado.agregarOpinion(Vinchuca.Sordida, usuarioExpertoMock(true, false), muestraMock);
+        estado.agregarOpinion(Vinchuca.Infestans, usuarioExpertoMock(true, false), muestraMock);
+        estado.agregarOpinion(Vinchuca.Infestans, usuarioExpertoMock(true, false), muestraMock);
+        estado.agregarOpinion(Vinchuca.Sordida, usuarioExpertoMock(true, false), muestraMock);
+
+        Vinchuca resultado = estado.calcularResultado(muestraMock);
+        assertEquals(Vinchuca.Infestans, resultado);
+    }
+
+    // Método de ayuda para simular múltiples usuarios expertos (sin usar mocks internos compartidos)
+    private Usuario usuarioExpertoMock(boolean esExperto, boolean fueVotado) {
+        Usuario u = mock(Usuario.class);
+        when(u.isEsExperto()).thenReturn(esExperto);
+        when(muestraMock.fueVotado(any())).thenReturn(fueVotado);
+        return u;
     }
 }
